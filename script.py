@@ -20,49 +20,28 @@ import os  # Import the os module to handle file paths
 from sklearn.metrics import roc_auc_score
 
 
-df_01=pd.read_csv("df_01.csv")
-df_02=pd.read_csv("df_02.csv")
-df_03=pd.read_csv("df_03.csv")
-df_03=pd.read_csv("df_03.csv")
-df_04=pd.read_csv("df_04.csv")
-df_05=pd.read_csv("df_05.csv")
-df_06=pd.read_csv("df_06.csv")
-df_07=pd.read_csv("df_07.csv")
-df_08=pd.read_csv("df_08.csv")
-df_09=pd.read_csv("df_09.csv")
-df_10=pd.read_csv("df_10.csv")
-df_11=pd.read_csv("df_11.csv")
-df_12=pd.read_csv("df_12.csv")
-df_13=pd.read_csv("df_13.csv")
-df_14=pd.read_csv("df_14.csv")
-df_15=pd.read_csv("df_15.csv")
-df_16=pd.read_csv("df_16.csv")
-df_17=pd.read_csv("df_17.csv")
-df_18=pd.read_csv("df_18.csv")
-df_19=pd.read_csv("df_19.csv")
-dataframes = [df_01, df_02, df_03, df_04, df_05, df_06, df_07, df_08, df_09, df_10, df_11, df_12, df_13, df_14, df_15, df_16, df_17, df_18, df_19]
-df_base = df_01
+df_base=pd.read_csv("All_features")
 
-# Parcourez la liste des DataFrames restants pour effectuer la jointure
-for df in dataframes[1:]:
-    # Utilisez la méthode merge pour effectuer une jointure sur la colonne "ID"
-    df_base = df_base.merge(df, on="ID", how="inner")
-
-df_pheno=pd.read_csv('../Phenotype/donnees_transformees.csv', sep='\t')
+df_pheno=pd.read_csv('donnees_transformees.csv', sep='\t')
 df_pheno= df_pheno[["ID", "Smoking_status"]]
 
 # Jointure des données SNP et phénotype sur la colonne "ID"
 joined_data = df_base.merge(df_pheno, on="ID")
 
-scaled_features = joined_data.iloc[:, 1:-1]
+# Supprimer les lignes où la dernière colonne est égale à -1
+df = joined_data[joined_data.iloc[:, -1] != -1]
 
-labels=joined_data.iloc[:, -1]
+scaled_features = df.iloc[:, 1:-1]
+
+labels=df.iloc[:, -1]
 
 # Diviser les données en ensembles d'entraînement et de test
 train_features, test_features, train_labels, test_labels = train_test_split(scaled_features, labels, test_size=0.2, random_state=42)
 
-model = svm.SVC(probability=True, random_state=42)
+# Créez un modèle SVM avec probabilité activée
+model = SVC(probability=True, random_state=42)
 
+# Créez un objet KFold pour la validation croisée à 10 plis
 kf = KFold(n_splits=10, shuffle=True, random_state=42)
 
 # Effectuez la validation croisée et obtenez les scores pour chaque pli
@@ -83,15 +62,6 @@ print(f'Standard Deviation (Recall): {recall_scores.std():.2f}')
 
 print(f'Mean F1-score: {f1_scores.mean():.2f}')
 print(f'Standard Deviation (F1-score): {f1_scores.std():.2f}')
-
-# Supprimer les lignes où la dernière colonne est égale à -1
-df_AUC_SVM = joined_data[joined_data.iloc[:, -1] != -1]
-
-scaled_features = df_AUC_SVM.iloc[:, 1:-1]
-labels=df_AUC_SVM.iloc[:, -1]
-
-# Diviser les données en ensembles d'entraînement et de test
-train_features, test_features, train_labels, test_labels = train_test_split(scaled_features, labels, test_size=0.2, random_state=42)
 
 # Créez un modèle SVM avec probabilité activée
 model = SVC(probability=True, random_state=42)
