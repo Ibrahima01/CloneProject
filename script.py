@@ -2,268 +2,206 @@ import pandas as pd
 import numpy as np
 from sklearn import svm
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score
 from sklearn import preprocessing
 from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
+from sklearn.linear_model import LogisticRegression
+from sklearn import preprocessing
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import VotingClassifier
+from sklearn.ensemble import AdaBoostClassifier
+from sklearn.model_selection import cross_val_score
+from sklearn.model_selection import KFold
+from sklearn.metrics import roc_curve, auc
+from sklearn.svm import SVC
+import matplotlib.pyplot as plt
+import os  # Import the os module to handle file paths
+from sklearn.metrics import roc_auc_score
 
 
-# Charger les données à partir du fichier CSV
-df_01=pd.read_csv('Transformed data/01_transposed_transform.csv', sep='\t')
-df_02=pd.read_csv('Transformed data/02_transposed_transform.csv', sep='\t')
-df_03=pd.read_csv('Transformed data/03_transposed_transform.csv', sep='\t')
-df_04=pd.read_csv('Transformed data/04_transposed_transform.csv', sep='\t')
-df_05=pd.read_csv('Transformed data/05_transposed_transform.csv', sep='\t')
-df_06=pd.read_csv('Transformed data/06_transposed_transform.csv', sep='\t')
-df_07=pd.read_csv('Transformed data/07_transposed_transform.csv', sep='\t')
-df_08=pd.read_csv('Transformed data/08_transposed_transform.csv', sep='\t')
-df_09=pd.read_csv('Transformed data/09_transposed_transform.csv', sep='\t')
-df_10=pd.read_csv('Transformed data/10_transposed_transform.csv', sep='\t')
-df_11=pd.read_csv('Transformed data/11_transposed_transform.csv', sep='\t')
-df_12=pd.read_csv('Transformed data/12_transposed_transform.csv', sep='\t')
-df_13=pd.read_csv('Transformed data/13_transposed_transform.csv', sep='\t')
-df_14=pd.read_csv('Transformed data/14_transposed_transform.csv', sep='\t')
-df_15=pd.read_csv('Transformed data/15_transposed_transform.csv', sep='\t')
-df_16=pd.read_csv('Transformed data/16_transposed_transform.csv', sep='\t')
-df_17=pd.read_csv('Transformed data/17_transposed_transform.csv', sep='\t')
-df_18=pd.read_csv('Transformed data/18_transposed_transform.csv', sep='\t')
-df_19=pd.read_csv('Transformed data/19_transposed_transform.csv', sep='\t')
+df_01=pd.read_csv("df_01.csv")
+df_02=pd.read_csv("df_02.csv")
+df_03=pd.read_csv("df_03.csv")
+df_03=pd.read_csv("df_03.csv")
+df_04=pd.read_csv("df_04.csv")
+df_05=pd.read_csv("df_05.csv")
+df_06=pd.read_csv("df_06.csv")
+df_07=pd.read_csv("df_07.csv")
+df_08=pd.read_csv("df_08.csv")
+df_09=pd.read_csv("df_09.csv")
+df_10=pd.read_csv("df_10.csv")
+df_11=pd.read_csv("df_11.csv")
+df_12=pd.read_csv("df_12.csv")
+df_13=pd.read_csv("df_13.csv")
+df_14=pd.read_csv("df_14.csv")
+df_15=pd.read_csv("df_15.csv")
+df_16=pd.read_csv("df_16.csv")
+df_17=pd.read_csv("df_17.csv")
+df_18=pd.read_csv("df_18.csv")
+df_19=pd.read_csv("df_19.csv")
+dataframes = [df_01, df_02, df_03, df_04, df_05, df_06, df_07, df_08, df_09, df_10, df_11, df_12, df_13, df_14, df_15, df_16, df_17, df_18, df_19]
+df_base = df_01
 
-# Jointure des données partitions SNPs sur la colonne "ID"
-joined_data1 = df_01.merge(df_02, on="ID")
-joined_data2 = joined_data1.merge(df_03, on="ID")
-joined_data3 = joined_data2.merge(df_04, on="ID")
-joined_data4 = joined_data3.merge(df_05, on="ID")
-joined_data5 = joined_data4.merge(df_06, on="ID")
-joined_data6 = joined_data5.merge(df_07, on="ID")
-joined_data7 = joined_data6.merge(df_08, on="ID")
-joined_data8 = joined_data7.merge(df_09, on="ID")
-joined_data9 = joined_data8.merge(df_10, on="ID")
-joined_data10 = joined_data9.merge(df_11, on="ID")
-joined_data11 = joined_data10.merge(df_12, on="ID")
-joined_data12 = joined_data11.merge(df_13, on="ID")
-joined_data13 = joined_data12.merge(df_14, on="ID")
-joined_data14 = joined_data13.merge(df_15, on="ID")
-joined_data15 = joined_data14.merge(df_16, on="ID")
-joined_data16 = joined_data15.merge(df_17, on="ID")
-joined_data17 = joined_data16.merge(df_18, on="ID")
-joined_data18 = joined_data17.merge(df_19, on="ID")
-pheno_data = pd.read_csv("Phenotype/donnees_transformees.csv", sep="\t")
-pheno_data = pheno_data[["ID", "Smoking_status"]]
-joined_data = joined_data18.merge(pheno_data, on="ID")
+# Parcourez la liste des DataFrames restants pour effectuer la jointure
+for df in dataframes[1:]:
+    # Utilisez la méthode merge pour effectuer une jointure sur la colonne "ID"
+    df_base = df_base.merge(df, on="ID", how="inner")
 
+df_pheno=pd.read_csv('../Phenotype/donnees_transformees.csv', sep='\t')
+df_pheno= df_pheno[["ID", "Smoking_status"]]
 
-scaler = StandardScaler()
-scaled_features = scaler.fit_transform(joined_data.iloc[:, 1:-1])
+# Jointure des données SNP et phénotype sur la colonne "ID"
+joined_data = df_base.merge(df_pheno, on="ID")
+
+scaled_features = joined_data.iloc[:, 1:-1]
 
 labels=joined_data.iloc[:, -1]
 
 # Diviser les données en ensembles d'entraînement et de test
 train_features, test_features, train_labels, test_labels = train_test_split(scaled_features, labels, test_size=0.2, random_state=42)
 
-# Créer et entraîner le modèle SVM
-model_SVM_linear = svm.SVC(kernel='linear')
-model_SVM_linear.fit(train_features, train_labels)
-print ("Done")
+model = svm.SVC(probability=True, random_state=42)
 
-# Prédire les labels pour l'ensemble de test
-predictions_SVM = model_SVM_linear.predict(test_features)
-# Calculer l'accuracy
-accuracy_SVM = accuracy_score(test_labels, predictions_SVM)
-print("Accuracy SVM:", accuracy_SVM)
+kf = KFold(n_splits=10, shuffle=True, random_state=42)
 
-# Obtenir les coefficients du modèle SVM
-coefficients = model_SVM_linear.coef_
+# Effectuez la validation croisée et obtenez les scores pour chaque pli
+accuracy_scores = cross_val_score(model, train_features, train_labels, cv=kf, scoring='accuracy')
+precision_scores = cross_val_score(model, train_features, train_labels, cv=kf, scoring='precision')
+recall_scores = cross_val_score(model, train_features, train_labels, cv=kf, scoring='recall')
+f1_scores = cross_val_score(model, train_features, train_labels, cv=kf, scoring='f1')
 
-# Calculer la somme des carrés des coefficients pour normaliser
-coef_sum_squares = np.sum(coefficients**2, axis=0)
-norm_coef_sum_squares = coef_sum_squares / np.sum(coef_sum_squares)
+# Affichez les métriques moyennes et écart-types
+print(f'Mean Accuracy: {accuracy_scores.mean():.2f}')
+print(f'Standard Deviation (Accuracy): {accuracy_scores.std():.2f}')
 
-# Trier les indices des caractéristiques par ordre décroissant de l'importance
-top_feature_indices = np.argsort(norm_coef_sum_squares)[::-1][:10]
+print(f'Mean Precision: {precision_scores.mean():.2f}')
+print(f'Standard Deviation (Precision): {precision_scores.std():.2f}')
 
-# Obtenir les noms des caractéristiques (variants)
-feature_names = joined_data.columns[1:-1]
+print(f'Mean Recall: {recall_scores.mean():.2f}')
+print(f'Standard Deviation (Recall): {recall_scores.std():.2f}')
 
-# Afficher les 10 meilleurs variants avec leurs pourcentages d'importance
-print("Top 10 Variants and their Importance of SVM:")
-for idx in top_feature_indices:
-    print(f"{feature_names[idx]} : {norm_coef_sum_squares[idx]*100:.2f}%")
+print(f'Mean F1-score: {f1_scores.mean():.2f}')
+print(f'Standard Deviation (F1-score): {f1_scores.std():.2f}')
+
+# Supprimer les lignes où la dernière colonne est égale à -1
+df_AUC_SVM = joined_data[joined_data.iloc[:, -1] != -1]
+
+scaled_features = df_AUC_SVM.iloc[:, 1:-1]
+labels=df_AUC_SVM.iloc[:, -1]
+
+# Diviser les données en ensembles d'entraînement et de test
+train_features, test_features, train_labels, test_labels = train_test_split(scaled_features, labels, test_size=0.2, random_state=42)
+
+# Créez un modèle SVM avec probabilité activée
+model = SVC(probability=True, random_state=42)
+
+# Créez un objet KFold pour la validation croisée à 10 plis
+kf = KFold(n_splits=10, shuffle=True, random_state=42)
+
+# Initialisez des listes pour stocker les valeurs fpr (taux de faux positifs) et tpr (taux de vrais positifs)
+fpr_list = []
+tpr_list = []
+roc_auc_list = []
+
+# Créez une figure pour afficher les courbes ROC
+plt.figure(figsize=(8, 6))
+
+for train_index, test_index in kf.split(train_features):
+    X_train_cv, X_test_cv = train_features.iloc[train_index], train_features.iloc[test_index]
+    y_train_cv, y_test_cv = train_labels.iloc[train_index], train_labels.iloc[test_index]
+
+    # Entraînez le modèle SVM sur l'ensemble de formation actuel
+    model.fit(X_train_cv, y_train_cv)
+
+    # Prédire les probabilités sur l'ensemble de test actuel
+    y_pred_prob = model.predict_proba(X_test_cv)[:, 1]
+
+    # Calculez le ROC AUC
+    fpr, tpr, _ = roc_curve(y_test_cv, y_pred_prob)
+    roc_auc = auc(fpr, tpr)
+
+    # Ajoutez les valeurs à la liste
+    fpr_list.append(fpr)
+    tpr_list.append(tpr)
+    roc_auc_list.append(roc_auc)
+
+# Tracez les courbes ROC pour chaque pli
+for i in range(len(fpr_list)):
+    plt.plot(fpr_list[i], tpr_list[i], lw=2, label=f'Fold {i+1} (AUC = {roc_auc_list[i]:.2f})')
+
+# Paramètres de la figure
+plt.plot([0, 1], [0, 1], 'k--', lw=2)
+plt.xlim([0.0, 1.0])
+plt.ylim([0.0, 1.05])
+plt.xlabel('False Positive Rate')
+plt.ylabel('True Positive Rate')
+plt.title('Receiver Operating Characteristic (ROC) - 10-Fold Cross Validation')
+plt.legend(loc="lower right")
+
+# Create the directory if it doesn't exist
+os.makedirs(figure_directory, exist_ok=True)
+
+# Save the figure with a specific name (you can customize the filename)
+figure_filename = os.path.join(figure_directory, 'auc_k_cross_validation.png')
+plt.savefig(figure_filename)
+
+# Close the current figure to release resources
+plt.close()
 
 
-from sklearn.linear_model import LogisticRegression
-from sklearn import preprocessing
+# Créez une liste pour stocker le nombre de features et l'AUC correspondant
+num_features = []
+auc_scores = []
 
-model_LR=LogisticRegression(max_iter=10000)
-model_LR.fit(train_features, train_labels)
+# Variations du nombre de features (vous pouvez ajuster la plage)
+for n in range(1, train_features.shape[1] + 1):
+    # Sélectionner les n premières features
+    X_train_subset = train_features.iloc[:, :n]
 
-# Prédire les labels pour l'ensemble de test
-predictions = model_LR.predict(test_features)
-
-# Calculer l'accuracy
-accuracy = accuracy_score(test_labels, predictions)
-print("Accuracy of Logistic Regression:", accuracy)
-
-# Obtenir les coefficients du modèle de régression logistique
-coefficients = model_LR.coef_
-
-# Calculer la somme des carrés des coefficients pour normaliser
-coef_sum_squares = np.sum(coefficients**2, axis=0)
-norm_coef_sum_squares = coef_sum_squares / np.sum(coef_sum_squares)
-
-# Trier les indices des caractéristiques par ordre décroissant de l'importance
-top_feature_indices = np.argsort(norm_coef_sum_squares)[::-1][:10]
-
-# Obtenir les noms des caractéristiques (variants)
-feature_names = joined_data.columns[1:-1]
-
-# Afficher les 10 meilleurs variants avec leurs pourcentages d'importance
-print("Top 10 Variants and their Importance (Logistic Regression):")
-for idx in top_feature_indices:
-    print(f"{feature_names[idx]} : {norm_coef_sum_squares[idx]*100:.2f}%")
+    # Créer un objet de modèle (par exemple, SVM) à l'intérieur de la boucle
+    model = SVC(probability=True, random_state=42)
     
+    # Initialiser les scores pour la validation croisée
+    auc_scores_fold = []
 
-from sklearn.tree import DecisionTreeClassifier
+    # Créez un objet KFold pour la validation croisée
+    kf = KFold(n_splits=10, shuffle=True, random_state=42)
 
-# Créer et entraîner le modèle DecisionTreeClassifier
-model = DecisionTreeClassifier()
-model.fit(train_features, train_labels)
+    # Effectuer la validation croisée
+    for train_index, test_index in kf.split(X_train_subset):
+        X_train_cv, X_test_cv = X_train_subset.iloc[train_index], X_train_subset.iloc[test_index]
+        y_train_cv, y_test_cv = train_labels.iloc[train_index], train_labels.iloc[test_index]
 
-# Faire des prédictions sur les données de test
-predictions = model.predict(test_features)
+        # Entraîner le modèle sur le sous-ensemble de features
+        model.fit(X_train_cv, y_train_cv)
 
-# Calculer l'exactitude des prédictions
-accuracy = accuracy_score(test_labels, predictions)
-print("Accuracy of decision Tree Classifier: {:.2f}%".format(accuracy * 100))
+        # Prédire les probabilités et calculer l'AUC
+        y_pred_prob = model.predict_proba(X_test_cv)[:, 1]
+        auc = roc_auc_score(y_test_cv, y_pred_prob)
+        auc_scores_fold.append(auc)
 
-# Obtenir l'importance des caractéristiques du modèle Decision Tree
-feature_importances = model.feature_importances_
+    # Calculer la moyenne des AUC de tous les plis
+    auc_mean = np.mean(auc_scores_fold)
 
-# Trier les indices des caractéristiques par ordre décroissant de l'importance
-top_feature_indices = np.argsort(feature_importances)[::-1][:10]
+    # Enregistrer le nombre de features et l'AUC
+    num_features.append(n)
+    auc_scores.append(auc_mean)
 
-# Obtenir les noms des caractéristiques (variants)
-feature_names = joined_data.columns[1:-1]
+# Tracer la courbe d'évolution de l'AUC en fonction du nombre de features
+plt.figure(figsize=(10, 6))
+plt.plot(num_features, auc_scores, marker='o', linestyle='-', color='b')
+plt.xlabel('Nombre de Features')
+plt.ylabel('AUC Score (Cross-Validated)')
+plt.title('Évolution de l\'AUC en fonction du nombre de Features (Cross-Validated)')
+plt.grid(True)
 
-# Afficher les 10 meilleurs variants avec leurs pourcentages d'importance
-print("Top 10 Variants and their Importance (Decision Tree Classifier):")
-for idx in top_feature_indices:
-    print(f"{feature_names[idx]} : {feature_importances[idx]*100:.2f}%")
+# Create the directory if it doesn't exist
+os.makedirs(figure_directory, exist_ok=True)
 
+# Save the figure with a specific name (you can customize the filename)
+figure_filename = os.path.join(figure_directory, 'auc_vs_num_features.png')
+plt.savefig(figure_filename)
 
-from sklearn.ensemble import RandomForestClassifier
-
-# Créer et entraîner le modèle RandomForestClassifier
-rf_classifier = RandomForestClassifier()
-rf_classifier.fit(train_features, train_labels)
-
-#Faire des prédictions sur l'ensemble de test
-predictions = rf_classifier.predict(test_features)
-#Évaluer les performances du modèle
-accuracy = (predictions == test_labels).mean()
-print("Accuracy of Random Forest:", accuracy)
-
-# Obtenir l'importance des caractéristiques du modèle Random Forest
-feature_importances = rf_classifier.feature_importances_
-
-# Trier les indices des caractéristiques par ordre décroissant de l'importance
-top_feature_indices = np.argsort(feature_importances)[::-1][:10]
-
-# Obtenir les noms des caractéristiques (variants)
-feature_names = joined_data.columns[1:-1]
-
-# Afficher les 10 meilleurs variants avec leurs pourcentages d'importance
-print("Top 10 Variants and their Importance (Random Forest Classifier):")
-for idx in top_feature_indices:
-    print(f"{feature_names[idx]} : {feature_importances[idx]*100:.2f}%")
-    
-
-from sklearn.ensemble import VotingClassifier
-
-
-svm_model = svm.SVC()
-logistic_model = LogisticRegression()
-decision_tree_model = DecisionTreeClassifier()
-random_forest_model = RandomForestClassifier()
-mlp_model = MLPClassifier()
-
-#Regrouper les modèles dans un ensemble learning
-ensemble_model = VotingClassifier(
-estimators=[
-("svm", svm_model),
-("logistic", logistic_model),
-("decision_tree", decision_tree_model),
-("random_forest", random_forest_model),
-("mlp", mlp_model),
-]
-)
-
-#Entraîner l'ensemble learning
-ensemble_model.fit(train_features, train_labels)
-
-#Faire des prédictions sur l'ensemble de test
-predictions = ensemble_model.predict(test_features)
-#Évaluer les performances de l'ensemble learning
-accuracy = (predictions == test_labels).mean()
-print("Accuracy of Voting :", accuracy)
-
-# Initialiser un dictionnaire pour stocker les importances des caractéristiques
-feature_importances = {}
-
-# Obtenir les importances des caractéristiques pour chaque modèle individuel
-for name, model_voting in ensemble_model.named_estimators_.items():
-    if hasattr(model_voting, "feature_importances_"):
-        feature_importances[name] = model_voting.feature_importances_
-
-# Calculer les importances agrégées en moyenne
-aggregate_importances = np.mean(list(feature_importances.values()), axis=0)
-
-# Trier les indices des caractéristiques par ordre décroissant des importances
-top_feature_indices = np.argsort(aggregate_importances)[::-1][:10]
-
-# Obtenir les noms des caractéristiques (variants)
-feature_names = joined_data.columns[1:-1]
-
-# Afficher les 10 meilleurs variants avec leurs importances agrégées
-print("Top 10 Variants and their Aggregate Importances (Voting Classifier):")
-for idx in top_feature_indices:
-    print(f"{feature_names[idx]} : {aggregate_importances[idx]:.4f}")
-    
-
-from sklearn.ensemble import AdaBoostClassifier
-
-# Initialisation du AdaBoostClassifier
-boosting_model = AdaBoostClassifier(
-    base_estimator=None,  # Vous pouvez spécifier un modèle de base si nécessaire
-    n_estimators=50,  # Nombre d'estimateurs (modèles) à entraîner
-    random_state=42  # Réglez la graine aléatoire pour la reproductibilité
-)
-
-# Entraîner le modèle AdaBoost avec les modèles individuels
-boosting_model.fit(train_features, train_labels)
-
-# Faire des prédictions sur l'ensemble de test
-predictions = boosting_model.predict(test_features)
-
-# Évaluer les performances du modèle
-accuracy = accuracy_score(test_labels, predictions)
-print("Accuracy of Boosting :", accuracy)
-
-# Obtenir l'importance des caractéristiques (features)
-feature_importance = boosting_model.feature_importances_
-# Obtenir les noms des colonnes (variantes)
-variant_names = joined_data.columns[1:-1]  # Exclure la première colonne (ID) et la dernière colonne (labels)
-
-# Trier les variantes par importance décroissante
-sorted_indices = np.argsort(feature_importance)[::-1]
-sorted_variants = variant_names[sorted_indices]
-
-# Afficher les 10 variantes les plus importantes avec leurs taux d'importance
-top_10_variants = sorted_variants[:10]
-top_10_importances = feature_importance[sorted_indices][:10]
-
-print("Les 10 variantes les plus importantes avec leurs taux d'importance:")
-for variant, importance in zip(top_10_variants, top_10_importances):
-    print(f"{variant}: {importance}")
-    
-
-
+# Close the current figure to release resources
+plt.close()
