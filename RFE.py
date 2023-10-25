@@ -1,3 +1,8 @@
+import pandas as pd
+from sklearn.feature_selection import RFE
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import train_test_split
+
 # Load your dataset (replace 'your_data.csv' with your actual data file)
 df_01 = pd.read_csv('../01_transposed_transform.csv', sep='\t')
 df_02 = pd.read_csv('../02_transposed_transform.csv', sep='\t')
