@@ -10,31 +10,30 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_sc
 from sklearn.metrics import roc_curve, roc_auc_score
 import numpy as np
 import xgboost as xgb
-import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split, cross_val_score, KFold
 import os
 import numpy as np
 
 # Load your dataset (replace 'your_data.csv' with your actual data file)
-df_01 = pd.read_csv('../01_transposed_transform.csv', sep='\t')
-df_02 = pd.read_csv('../02_transposed_transform.csv', sep='\t')
-df_03 = pd.read_csv('../03_transposed_transform.csv', sep='\t')
-df_04 = pd.read_csv('../04_transposed_transform.csv', sep='\t')
-df_05 = pd.read_csv('../05_transposed_transform.csv', sep='\t')
-df_06 = pd.read_csv('../06_transposed_transform.csv', sep='\t')
-df_07 = pd.read_csv('../07_transposed_transform.csv', sep='\t')
-df_08 = pd.read_csv('../08_transposed_transform.csv', sep='\t')
-df_09 = pd.read_csv('../09_transposed_transform.csv', sep='\t')
-df_10 = pd.read_csv('../10_transposed_transform.csv', sep='\t')
-df_11 = pd.read_csv('../11_transposed_transform.csv', sep='\t')
-df_12 = pd.read_csv('../12_transposed_transform.csv', sep='\t')
-df_13 = pd.read_csv('../13_transposed_transform.csv', sep='\t')
-df_14 = pd.read_csv('../14_transposed_transform.csv', sep='\t')
-df_15 = pd.read_csv('../15_transposed_transform.csv', sep='\t')
-df_16 = pd.read_csv('../16_transposed_transform.csv', sep='\t')
-df_17 = pd.read_csv('../17_transposed_transform.csv', sep='\t')
-df_18 = pd.read_csv('../18_transposed_transform.csv', sep='\t')
-df_19 = pd.read_csv('../19_transposed_transform.csv', sep='\t')
+df_01 = pd.read_csv('../../01_transposed_transform.csv', sep='\t')
+df_02 = pd.read_csv('../../02_transposed_transform.csv', sep='\t')
+df_03 = pd.read_csv('../../03_transposed_transform.csv', sep='\t')
+df_04 = pd.read_csv('../../04_transposed_transform.csv', sep='\t')
+df_05 = pd.read_csv('../../05_transposed_transform.csv', sep='\t')
+df_06 = pd.read_csv('../../06_transposed_transform.csv', sep='\t')
+df_07 = pd.read_csv('../../07_transposed_transform.csv', sep='\t')
+df_08 = pd.read_csv('../../08_transposed_transform.csv', sep='\t')
+df_09 = pd.read_csv('../../09_transposed_transform.csv', sep='\t')
+df_10 = pd.read_csv('../../10_transposed_transform.csv', sep='\t')
+df_11 = pd.read_csv('../../11_transposed_transform.csv', sep='\t')
+df_12 = pd.read_csv('../../12_transposed_transform.csv', sep='\t')
+df_13 = pd.read_csv('../../13_transposed_transform.csv', sep='\t')
+df_14 = pd.read_csv('../../14_transposed_transform.csv', sep='\t')
+df_15 = pd.read_csv('../../15_transposed_transform.csv', sep='\t')
+df_16 = pd.read_csv('../../16_transposed_transform.csv', sep='\t')
+df_17 = pd.read_csv('../../17_transposed_transform.csv', sep='\t')
+df_18 = pd.read_csv('../../18_transposed_transform.csv', sep='\t')
+df_19 = pd.read_csv('../../19_transposed_transform.csv', sep='\t')
 dataframes = [df_01, df_02, df_03, df_04, df_05, df_06, df_07, df_08, df_09, df_10, df_11, df_12, df_13, df_14, df_15, df_16, df_17, df_18, df_19]
 
 df_base = df_01
@@ -43,7 +42,7 @@ for df in dataframes[1:]:
     # Utilisez la méthode merge pour effectuer une jointure sur la colonne "ID"
     df_base = df_base.merge(df, on="ID", how="inner")
     
-df_pheno = pd.read_csv('../Phenotype/donnees_transformees.csv', sep='\t')
+df_pheno = pd.read_csv('../../Phenotype/donnees_transformees.csv', sep='\t')
 df_pheno= df_pheno[["ID", "Smoking_status"]]
 
 data_ = df_base.merge(df_pheno, on="ID")
@@ -55,12 +54,7 @@ df = pd.get_dummies(data=data_, columns= [col for col in data_.columns if col no
 
 X = df.iloc[:, 2:]
 
-# Perform Truncated SVD.
-n_components = 100  # Set the desired number of components.
-svd = TruncatedSVD(n_components=n_components)
-X_svd = svd.fit_transform(X)
-
-scaled_features = X_svd
+scaled_features = X
 
 labels=df.iloc[:, 1]
 
@@ -104,6 +98,8 @@ top_100_features_df = pd.DataFrame({'Feature': top_100_features, 'Importance Sco
 # Display the top 100 features with their importance scores
 print(top_100_features_df)
 
+top_100_features_df.to_csv("TopLR.txt", index=False, sep ="\t")
+=========================================================================================================================
 # Créer et entraîner le modèle SVM
 model_SVM_linear = svm.SVC(kernel='linear', probability=True, random_state=42)
 model_SVM_linear.fit(train_features, train_labels)
@@ -130,7 +126,8 @@ top_100_features_df = pd.DataFrame({'Feature': top_100_features, 'Importance Sco
 
 # Display the top 100 features with their importance scores
 print(top_100_features_df)
-
+top_100_features_df.to_csv("TopSVM.txt", index=False, sep ="\t")
+=========================================================================================================================
 
 
 
@@ -164,6 +161,8 @@ top_100_features_df = pd.DataFrame({'Feature': top_100_features, 'Importance Sco
 
 # Display the top 100 features with their importance scores
 print(top_100_features_df)
+top_100_features_df.to_csv("TopDT.txt", index=False, sep ="\t")
+=========================================================================================================================
 
 # Create and train the Random Forest model
 model_random_forest = RandomForestClassifier(random_state=42)
@@ -195,6 +194,8 @@ top_100_features_df = pd.DataFrame({'Feature': top_100_features, 'Importance Sco
 
 # Display the top 100 features with their importance scores
 print(top_100_features_df)
+top_100_features_df.to_csv("TopRF.txt", index=False, sep ="\t")
+=========================================================================================================================
 
 # Create individual classifiers
 model_svm = SVC(kernel='linear', probability=True, random_state=42)
@@ -262,6 +263,8 @@ top_100_features_df = pd.DataFrame({'Feature': top_100_features, 'Importance Sco
 
 # Display the top 100 features with their importance scores
 print(top_100_features_df)
+top_100_features_df.to_csv("TopVoting.txt", index=False, sep ="\t")
+=========================================================================================================================
 
 # Create and train the XGBoost model
 model_xgboost = xgb.XGBClassifier()
@@ -293,6 +296,8 @@ top_100_features_df = pd.DataFrame({'Feature': top_100_features, 'Importance Sco
 
 # Display the top 100 features with their importance scores
 print(top_100_features_df)
+top_100_features_df.to_csv("TopXGBoost.txt", index=False, sep ="\t")
+=========================================================================================================================
 
 
 # Create instances of the models
