@@ -4,6 +4,7 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_sc
 import gdown
 from sklearn.model_selection import train_test_split
 import numpy as np
+from sklearn.decomposition import TruncatedSVD
 
 
 
@@ -53,14 +54,27 @@ main_df = main_df.merge(pheno, on="ID")
 # Supprimer les lignes où la dernière colonne est égale à -1
 main_df = main_df[main_df.iloc[:, -1] != -1]
 
+#==============================================================================================================
+
 #Définition des features et des labels
 features = main_df.iloc[:, 1:-1]
 labels=main_df.iloc[:, -1]
 
+#SVD pour garder les 100 meilleurs variants
+# Normaliser les données
+features = features.astype('float32') / 2.0  # Comme les valeurs de SNP sont 0, 1, 2, on divise par 2
+
+# Choisir le seuil de variance expliquée
+variance_threshold = 0.5
+
+# Appliquer la SVD
+svd = TruncatedSVD(n_components=100, random_state=42)
+features_svd = svd.fit_transform(features)
+
 #==============================================================================================================
 
 # Récupérer le nombre de colonnes du DataFrame
-num_columns = features.shape[1]
+num_columns = features_svd.shape[1]
 
 # Trouver les diviseurs du nombre de colonnes et choisir m et n
 factors = []
@@ -72,8 +86,8 @@ for i in range(1, int(np.sqrt(num_columns)) + 1):
 m, n = factors[len(factors) // 2]  # Choix du facteur le plus proche
 
 # Redimensionner chaque ligne en une image de dimensions m x n
-num_samples = len(features)
-images = features.to_numpy().reshape(num_samples, m, n, -1)
+num_samples = len(features_svd)
+images = features_svd.reshape(num_samples, m, n, -1)
 
 # Vérifier les dimensions des images obtenues
 print(f"Dimensions des images : {images.shape}")
@@ -82,10 +96,6 @@ print(f"Dimensions des images : {images.shape}")
 
 # Diviser les données en ensembles d'entraînement et de test
 train_images, test_images, train_labels, test_labels = train_test_split(images, labels, test_size=0.2, random_state=42)
-
-# Normaliser les données
-train_images = train_images.astype('float32') / 2.0  # Comme les valeurs de SNP sont 0, 1, 2, on divise par 2
-test_images = test_images.astype('float32') / 2.0
 
 # Créer un modèle CNN simple avec TensorFlow
 model = tf.keras.Sequential([
