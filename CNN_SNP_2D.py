@@ -101,8 +101,8 @@ train_images, test_images, train_labels, test_labels = train_test_split(images, 
 model = tf.keras.Sequential([
     tf.keras.layers.Conv2D(32, (3, 3), activation='relu', input_shape=(m, n, 1)),
     tf.keras.layers.MaxPooling2D((2, 2)),
-    tf.keras.layers.Conv2D(64, (3, 3), activation='relu'),
-    tf.keras.layers.MaxPooling2D((2, 2)),
+    #tf.keras.layers.Conv2D(64, (3, 3), activation='relu'),
+    #tf.keras.layers.MaxPooling2D((2, 2)),
     tf.keras.layers.Flatten(),
     tf.keras.layers.Dense(128, activation='relu'),
     tf.keras.layers.Dense(2, activation='softmax')  # 2 classes pour non-fumeurs et fumeurs
