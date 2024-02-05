@@ -71,7 +71,7 @@ train_features, test_features, train_labels, test_labels = train_test_split(scal
 
 # Créer et entraîner le modèle Elastic Net
 # Vous pouvez ajuster les paramètres alpha et l1_ratio selon vos besoins
-model_en = ElasticNet(alpha=0.01, l1_ratio=0.5, random_state=42)
+model_en = ElasticNet(alpha=0.05, l1_ratio=0.5, random_state=42)
 model_en.fit(train_features, train_labels)
 
 #==============================================================================================================
