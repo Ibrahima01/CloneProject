@@ -56,11 +56,6 @@ pheno= pheno[["ID", "Smoking_status"]]
 main_df = main_df.merge(pheno, on="ID")
 # Supprimer les lignes où la dernière colonne est égale à -1
 main_df = main_df[main_df.iloc[:, -1] != -1]
-
-#==============================================================================================================
-
-# Supprimer les lignes où la dernière colonne est égale à -1
-main_df = main_df[main_df.iloc[:, -1] != -1]
 not_col= ["ID", "Smoking_status"]
 df = pd.get_dummies(data= main_df, columns= [col for col in main_df.columns if col not in not_col])
 
@@ -76,7 +71,7 @@ train_features, test_features, train_labels, test_labels = train_test_split(scal
 
 # Créer et entraîner le modèle Elastic Net
 # Vous pouvez ajuster les paramètres alpha et l1_ratio selon vos besoins
-model_en = ElasticNet(alpha=0.1, l1_ratio=0.5, random_state=42)
+model_en = ElasticNet(alpha=0.01, l1_ratio=0.5, random_state=42)
 model_en.fit(train_features, train_labels)
 
 #==============================================================================================================
