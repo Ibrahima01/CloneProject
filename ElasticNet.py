@@ -65,7 +65,7 @@ df = pd.get_dummies(data= main_df, columns= [col for col in main_df.columns if c
 scaled_features = df.iloc[:, 2:]
 labels=df.iloc[:, 1]
 # Diviser les données en ensembles d'entraînement et de test
-train_features, test_features, train_labels, test_labels = train_test_split(scaled_features, labels, test_size=0.2, random_state=42)
+#train_features, test_features, train_labels, test_labels = train_test_split(scaled_features, labels, test_size=0.2, random_state=42)
 
 #==============================================================================================================
 
