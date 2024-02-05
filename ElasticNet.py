@@ -87,5 +87,5 @@ list_feature=selected_features.tolist()
 new_data = scaled_features[list_feature]
 
 new_data['Smoking_status']=labels
-
+new_data = new_data.astype(int)
 new_data.to_csv("Alpha0001Beta05.csv", sep="\t", index = False)
