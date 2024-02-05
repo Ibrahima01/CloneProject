@@ -56,8 +56,6 @@ X = df.iloc[:, 2:]
 
 y = df.iloc[:, 1]
 
-# Diviser les données en ensembles d'entraînement et de test
-train_features, test_features, train_labels, test_labels = train_test_split(scaled_features, labels, test_size=0.2, random_state=42)
 # Split the dataset into training and testing sets
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
@@ -65,7 +63,7 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_
 model = RandomForestClassifier(n_estimators=100, random_state=42)
 
 # Specify the number of features to select using RFE
-num_features_to_select = 10
+num_features_to_select = 100
 
 # Initialize RFE with the model and the number of features to select
 rfe = RFE(estimator=model, n_features_to_select=num_features_to_select)
