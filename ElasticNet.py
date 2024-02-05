@@ -84,20 +84,8 @@ selected_features = scaled_features.columns[:][coefficients != 0]
 #==============================================================================================================
 
 list_feature=selected_features.tolist()
-scaled_features_selected = scaled_features[list_feature]
-# Diviser les données en ensembles d'entraînement et de test
-train_features, test_features, train_labels, test_labels = train_test_split(scaled_features_selected, labels, test_size=0.2, random_state=42)
+new_data = scaled_features[list_feature]
 
-#==============================================================================================================
+new_data['Smoking_status']=labels
 
-# Utiliser encoded_features pour l'entraînement de la Logistic Regression
-model_LR = LogisticRegression(max_iter=10000, random_state=42)
-model_LR.fit(train_features, train_labels)
-
-#==============================================================================================================
-
-# Prédire les étiquettes sur les données de test
-predictions = model_LR.predict(test_features)
-# Calculer la précision du modèle sur les données de test
-accuracy = accuracy_score(test_labels, predictions)
-print(f"Accuracy on test set: {accuracy}")
+new_data.to_csv("Alpha005Beta05.csv", sep="\t", index=False)
