@@ -71,7 +71,7 @@ labels=df.iloc[:, 1]
 
 # Créer et entraîner le modèle Elastic Net
 # Vous pouvez ajuster les paramètres alpha et l1_ratio selon vos besoins
-model_en = ElasticNet(alpha=0.0001, l1_ratio=0.5, random_state=42)
+model_en = ElasticNet(alpha=0.001, l1_ratio=0.5, random_state=42)
 model_en.fit(scaled_features, labels)
 
 #==============================================================================================================
@@ -88,4 +88,4 @@ new_data = scaled_features[list_feature]
 
 new_data['Smoking_status']=labels
 new_data = new_data.astype(int)
-new_data.to_csv("Alpha00001Beta05.csv", sep="\t", index = False)
+new_data.to_csv("Alpha0001Beta05.csv", sep="\t", index = False)
