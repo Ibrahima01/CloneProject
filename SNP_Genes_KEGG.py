@@ -81,4 +81,4 @@ with open("SNPs_selected.txt", "r") as file:
 new_df = main_df.loc[:, word_list]
 
 #Enregister le nouveau dataframe
-to_csv("SNP_Gene_KEGG.csv", sep="\t", index = False)
+new_df.to_csv("SNP_Gene_KEGG.csv", sep="\t", index = False)
