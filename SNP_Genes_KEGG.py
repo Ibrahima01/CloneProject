@@ -77,6 +77,7 @@ with open("SNPs_selected.txt", "r") as file:
         
 #==============================================================================================================
 
+word_list.append("Smoking_status")
 # Créer un nouveau DataFrame avec les colonnes extraites
 new_df = main_df.loc[:, word_list]
 
