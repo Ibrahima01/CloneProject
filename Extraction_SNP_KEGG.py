@@ -31,8 +31,7 @@ for url in urls:
     main_df = pd.merge(main_df, chunk_df, on='ID', how='outer')  # Effectuez la jointure
     del chunk_df  # Libérez la mémoire du DataFrame chargé
     
-df_snp=pd.read_csv("699_SNPs_KEGG__sans_occ.txt")
 
-jointure = pd.merge(main_df, df_snp, on="ID", how="right")
+main_df = main_df.T
 
-jointure.to_csv("699_SNPs_KEGG_inverse_dummy", sep="\t", index=False)
+main_df.to_csv("gse_transformed.csv", index=True, sep="\t")
