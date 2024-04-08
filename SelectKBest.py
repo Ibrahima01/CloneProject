@@ -85,4 +85,4 @@ new_data = features[selected_features]
 new_data.loc[:, 'Smoking_status'] = labels
 
 new_data = new_data.astype(int)
-new_data.to_csv("1000_Best_Features_Sans_Dummy.csv", sep="\t", index=False)
+new_data.to_csv("1000_Best_Features_Dummy.csv", sep="\t", index=False)
