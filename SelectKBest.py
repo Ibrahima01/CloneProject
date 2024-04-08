@@ -49,12 +49,11 @@ pheno= pheno[["ID", "Smoking_status"]]
 # Jointure des données SNP et phénotype sur la colonne "ID"
 main_df = main_df.merge(pheno, on="ID")
 
+# 1. Convertir tous les 2 dans le DataFrame en 1
+main_df.replace(2, 1, inplace=True)
+
 # Supprimer les lignes où la dernière colonne est égale à -1
 main_df = main_df[main_df.iloc[:, -1] != -1]
-
-#Dummy pour donner du sens au zéro
-not_col= ["ID", "Smoking_status"]
-df = pd.get_dummies(data= main_df, columns= [col for col in main_df.columns if col not in not_col])
 
 #==============================================================================================================
 
@@ -83,4 +82,4 @@ new_data = features[selected_features]
 #new_data['Smoking_status'] = labels  # Add the target variable back to the new dataset if needed
 
 new_data = new_data.astype(int)
-new_data.to_csv("1000_Best_Features.csv", sep="\t", index=False)
+new_data.to_csv("1000_Best_Features_Sans_Dummy.csv", sep="\t", index=False)
