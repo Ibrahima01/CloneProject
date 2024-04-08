@@ -58,10 +58,8 @@ main_df = main_df[main_df.iloc[:, -1] != -1]
 #==============================================================================================================
 
 #X = df.iloc[:, 2:]
-features = df.iloc[:, 2:]
-labels=df.iloc[:, 1]
-# Diviser les données en ensembles d'entraînement et de test
-train_features, test_features, train_labels, test_labels = train_test_split(features, labels, test_size=0.2, random_state=42)
+features = main_df.iloc[:, :-1]
+labels=main_df.iloc[:, -1]
 
 #==============================================================================================================
 
