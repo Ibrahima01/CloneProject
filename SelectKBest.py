@@ -81,5 +81,7 @@ new_data = features[selected_features]
 # Now, 'new_data' contains only the selected features, and you can save it as a new dataset
 #new_data['Smoking_status'] = labels  # Add the target variable back to the new dataset if needed
 
+new_data.loc[:, 'Smoking_status'] = labels
+
 new_data = new_data.astype(int)
 new_data.to_csv("1000_Best_Features_Sans_Dummy.csv", sep="\t", index=False)
