@@ -55,14 +55,11 @@ main_df.replace(2, 1, inplace=True)
 # Supprimer les lignes où la dernière colonne est égale à -1
 main_df = main_df[main_df.iloc[:, -1] != -1]
 
-#Dummies
-not_col= ["ID", "Smoking_status"]
-df = pd.get_dummies(data= main_df, columns= [col for col in main_df.columns if col not in not_col])
-
 #==============================================================================================================
 
-features = df.iloc[:, 2:]
-labels=df.iloc[:, 1]
+#X = df.iloc[:, 2:]
+features = main_df.iloc[:, 1:-1]
+labels=main_df.iloc[:, -1]
 
 #==============================================================================================================
 
@@ -85,4 +82,4 @@ new_data = features[selected_features]
 new_data.loc[:, 'Smoking_status'] = labels
 
 new_data = new_data.astype(int)
-new_data.to_csv("1000_Best_Features_Dummy.csv", sep="\t", index=False)
+new_data.to_csv("1000_Best_Features_Sans_Dummy.csv", sep="\t", index=False)
