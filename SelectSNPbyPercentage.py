@@ -59,7 +59,7 @@ colonnes_retenues = []
 for colonne in main_df.columns:
     presence=ppsf(colonne)
     absence=pasnf(colonne)
-    if ((presence>40) and (absence>40)):
+    if ((presence>40) and (absence>30)):
         colonnes_retenues.append(colonne)
 
 # Sélectionner les colonnes dont la différence de pourcentage est inférieure à 10%
